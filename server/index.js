@@ -1,4 +1,4 @@
-const { Connection, Request } = require("tedious");
+const { Connection, Request, TYPES } = require("tedious");
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -61,12 +61,9 @@ app.listen(5000, () => {
 app.get("/api/questions", async (req, res) => {
     console.log("Reading rows from the Table...");
 
-    var q = 'What_is_your_name'
-    var i = 'one'
-    var level = 'beginners'
-    // Read all rows from table
+
     const request = new Request(
-        `Select * from questions where ID=2`,
+        `Select * from questions where ID=@id`,
         (err, rowCount) => {
             if (err) {
                 console.error(err.message);
@@ -76,20 +73,33 @@ app.get("/api/questions", async (req, res) => {
         }
     );
 
+    request.addParameter("id", TYPES.Int, 2);
+
     await connection.execSql(request);
     var questions = []
     await request.on("row", columns => {
         columns.forEach(column => {
             console.log("%s\t%s", column.metadata.colName, column.value);
             if (column.metadata.colName == "question")
-                console.log('true')
-            questions.push(column.value);
+                questions.push(column.value);
         });
     });
 
-    console.log(questions);
+
+    request.on('done', function (rowCount, more) {
+        console.log("done");
 
 
-    res.send({ questions: questions });
+
+    });
+
+    request.on("requestCompleted", function (rowCount, more) {
+
+        console.log(questions);
+
+        res.send({ questions: questions });
+
+    });
+
 
 })
