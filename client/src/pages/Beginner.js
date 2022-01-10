@@ -3,6 +3,7 @@ import Header from "../Common Components/Navbar";
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import Timer from "./Timer";
+import { Button } from "react-bootstrap";
 
 const Beginner = () => {
     const [questions, setQuestions] = useState([]);
@@ -21,7 +22,7 @@ const Beginner = () => {
             {questions.map((q, idx) => {
 
                 return (
-                    <h1 key={idx}>{q}</h1>
+                    <Button key={idx}>{q}</Button>
 
                 )
 
