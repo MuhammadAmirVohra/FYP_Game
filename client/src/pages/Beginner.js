@@ -14,17 +14,17 @@ const Beginner = () => {
     const history = useHistory();
     const [questions, setQuestions] = useState([]);
     const [images, setImages] = useState([]);
-    // const [max, setMax] = useState(10)
-    var max = 10;
+    const [max, setMax] = useState(10)
+    // var max = 10;
     const min = 0
     const [scores, setscores] = useState(0);
     const [rand, setRandom] = useState(0);
-    const [count, setcount] = useState(0);
-    const [token, settoken]= useState(false);
+    const [count, setcount] = useState(1);
+    const [token, settoken] = useState(false);
     const [answers, setAnswers] = useState([]);
     const [textvalue, settextvalue] = useState("");
     const [incorrect, setIncorrect] = useState(0);
-    const [randomnumber, setrn] = useState([0]);
+    var randomnumber = [0];
     // const [module, setmodule] = useState(0);
     const [ans, setans] = useState("")
 
@@ -72,23 +72,27 @@ const Beginner = () => {
 
         if (user_ans == answers[rand]) {
             setscores(scores + 1);
-            if (count <= max) {
+            if (count < max) {
 
-                var temp = Math.floor(min + (Math.random() * (max - min)));;
-                
-                // if (!token)
-                // while (randomnumber.includes(temp))
-                //     temp = Math.floor(min + (Math.random() * (max - min)));
+                console.log(count);
+                console.log(max);
+                console.log(count < max);
+                var temp = Math.floor(min + (Math.random() * (max - min)));
 
-                setrn([...randomnumber, temp]);
+
+                while (randomnumber.includes(temp))
+                    temp = Math.floor(min + (Math.random() * (max - min)));
+
+
+                randomnumber.push(temp);
 
                 setRandom(temp);
                 setcount(count + 1);
-                if (answers[temp].includes(' '))
+                if (answers[temp] && answers[temp].includes(' '))
                     setans(processSentence(answers[temp]))
 
                 else if (answers[temp] && answers[temp].length > 1) {
-                
+
                     setans(shuffleWord(answers[temp]))
                 }
                 else
@@ -109,19 +113,21 @@ const Beginner = () => {
     useEffect(() => {
 
         axios.get("http://localhost:5000/api/" + id + "/questions").then((Response) => {
-            // console.log(Response.data.questions);
+            console.log(Response.data.questions);
+            console.log(Response.data.images);
+            console.log(Response.data.answers);
+
             setQuestions(Response.data.questions);
             setImages(Response.data.images);
-            // setMax(Response.data.questions.length);
+            setMax(Response.data.questions.length);
             // setmodule(2);
             setAnswers(Response.data.answers);
-            if (answers[rand] && answers[rand].length > 1) {
+            if (Response.data.answers[0] && Response.data.answers[0].includes(' '))
+                setans(processSentence(Response.data.answers[0]))
 
-                if (answers[rand].includes(' '))
-                    setans(processSentence(answers[rand]))
+            else if (Response.data.answers[0] && Response.data.answers[0].length > 1) {
 
-                else
-                    setans(shuffleWord(answers[rand]))
+                setans(shuffleWord(Response.data.answers[0]))
             }
             else
                 setans("")
@@ -188,69 +194,69 @@ const Beginner = () => {
                 </CardStyle>
 
                 {!token ?
-                    
+
                     (
                         <>
-                        <h1>Question No. {count+1}</h1>
-                        <h1 >{questions[rand]}</h1>
-                
-                    <div>
-                    {
-                        images[rand] ?
-                            (<><img src={"/images/" + images[rand]} alt=" "></img><br /></>)
-                            : null
-                    }
-                    </div>
+                            <h1>Question No. {count}</h1>
+                            <h1 >{questions[rand]}</h1>
 
-                    <div style={{ height: 150 + 'px', marginTop: '20px' }}>
-                    {
-                        images[rand] === "insert_tab.jpeg" ?
+                            <div>
+                                {
+                                    images[rand] ?
+                                        (<><img src={"/images/" + images[rand]} alt=" "></img><br /></>)
+                                        : null
+                                }
+                            </div>
 
-                            [...range(1, 11)].map((value) => {
-                                return (
-                                    <Button className="btn-lg" style={{ marginRight: '3px' }} onClick={() => checkanswer(value)}>{value}</Button>
-                                )
-                            })
+                            <div style={{ height: 150 + 'px', marginTop: '20px' }}>
+                                {
+                                    images[rand] === "insert_tab.jpeg" ?
 
-                            : images[rand] === "home_tab.jpg" ?
+                                        [...range(1, 11)].map((value) => {
+                                            return (
+                                                <Button className="btn-lg" style={{ marginRight: '3px' }} onClick={() => checkanswer(value)}>{value}</Button>
+                                            )
+                                        })
 
-                                [...range(1, 25)].map((value) => {
-                                    return (
-                                        <Button style={{ marginRight: '3px' }} onClick={() => checkanswer(value)}>{value}</Button>
-                                    )
-                                })
-                                : images[rand] === "ribbon.png" ?
+                                        : images[rand] === "home_tab.jpg" ?
 
-                                    [...range(1, 3)].map((value) => {
-                                        return (
-                                            <Button className="btn-lg" style={{ marginRight: '10px' }} onClick={() => checkanswer(value)}>{value}</Button>
-                                        )
-                                    }) :
-                                    (<>
-                                        <h4> Hint: {ans}</h4>
-                                        <Form onSubmit={(e)=>{e.preventDefault()}}>
-                                            <Form.Control type="text" value={textvalue} onChange={(e) => settextvalue(e.target.value)} placeholder="Your Answer" />
-                                        </Form>
-                                        <Btn onClick={() => { checkanswer(textvalue); }}  >Submit Answer</Btn>
+                                            [...range(1, 25)].map((value) => {
+                                                return (
+                                                    <Button style={{ marginRight: '3px' }} onClick={() => checkanswer(value)}>{value}</Button>
+                                                )
+                                            })
+                                            : images[rand] === "ribbon.png" ?
 
-                                    </>)
+                                                [...range(1, 3)].map((value) => {
+                                                    return (
+                                                        <Button className="btn-lg" style={{ marginRight: '10px' }} onClick={() => checkanswer(value)}>{value}</Button>
+                                                    )
+                                                }) :
+                                                (<>
+                                                    <h4> Hint: {ans}</h4>
+                                                    <Form onSubmit={(e) => { e.preventDefault() }}>
+                                                        <Form.Control type="text" value={textvalue} onChange={(e) => settextvalue(e.target.value)} placeholder="Your Answer" />
+                                                    </Form>
+                                                    <Btn onClick={() => { checkanswer(textvalue); }}  >Submit Answer</Btn>
 
-                    }
+                                                </>)
 
-                
-                    {/* <Btn onClick={() => {
+                                }
+
+
+                                {/* <Btn onClick={() => {
                         if (count !== max) {
                             setRandom(Math.floor(min + (Math.random() * (max - min))));
                             setCount(count + 1);
                         }
                         else { setToken(true) }
                     }} disabled={token}>Submit</Btn> */}
-                    <br />
-                </div>
-            </>
-            ) : null
+                                <br />
+                            </div>
+                        </>
+                    ) : null
 
-}
+                }
                 <div style={{ height: 80 + 'px' }}>
                     <Btn variant="success" disabled={!token} onClick={() => { pause(); SubmitResults(); }}>Finish Test</Btn>
                 </div>

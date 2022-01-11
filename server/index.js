@@ -76,7 +76,7 @@ app.get("/api/:id/questions", async (req, res) => {
 
     request.addParameter("id", TYPES.Int, req.params.id);
     // request.addParameter("id", TYPES.NVarChar, "Hello");
-    
+
 
 
     await connection.execSql(request);
@@ -98,21 +98,22 @@ app.get("/api/:id/questions", async (req, res) => {
     });
 
 
-    
+
     request.on("requestCompleted", function (rowCount, more) {
 
         console.log(questions);
         console.log(images);
+        console.log(answers);
 
-        res.send({ questions: questions, images: images, answers:answers});
+        res.send({ questions: questions, images: images, answers: answers });
 
     });
 
 
 })
 
-app.post('/api/save_answers', async (req,res)=>{
-     
+app.post('/api/save_answers', async (req, res) => {
+
     const request = new Request(
         `insert into results(Score,Penalties,Minutes,Seconds,Module_ID) values(@Score,@Penalties,@Minutes,@Seconds,@Module_ID);`,
         (err, rowCount) => {
@@ -130,8 +131,8 @@ app.post('/api/save_answers', async (req,res)=>{
     request.addParameter("Seconds", TYPES.Int, req.body.seconds);
     request.addParameter("Module_ID", TYPES.Int, req.body.moduleId);
 
-    
-    
+
+
 
 
     await connection.execSql(request);
@@ -153,13 +154,13 @@ app.post('/api/save_answers', async (req,res)=>{
     // });
 
 
-    
+
     request.on("requestCompleted", function (rowCount, more) {
 
         // console.log(questions);
         // console.log(images);
 
-        res.send({ code : 200 });
+        res.send({ code: 200 });
 
     });
 })
