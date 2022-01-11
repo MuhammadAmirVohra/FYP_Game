@@ -12,7 +12,7 @@ const Main = () => {
             <Header />
             <Container>
 
-                <a href='/beginner'><Btn variant='danger' className='mb-3' > BEGINNERS LEVEL </Btn></a><br />
+                <a href='/beginner/2'><Btn variant='danger' className='mb-3' > BEGINNERS LEVEL </Btn></a><br />
                 <Btn variant='warning' className='mb-3'> INTERMEDIATE LEVEL </Btn><br />
                 <Btn variant='success' className='mb-3'> ADVANCED LEVEL </Btn>
 
